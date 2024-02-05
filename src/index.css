@@ -4,8 +4,18 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
+
+:root {
+  --green: linear-gradient(to top left, #39b385, #9be15d);
+  --yellow: linear-gradient(to top left, #ffb003, #ffcb03);
+  --red: linear-gradient(to top left, #e52a5a, #ff585f);
+}
 body {
   background-color: whitesmoke;
+}
+.App {
+  /* border: 1px solid; */
+  height: 100vh;
 }
 
 .navbar {
@@ -13,9 +23,14 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 5px 20px;
+  background-color: var(--green);
 }
 .greetings {
   font-size: 1.5rem;
+}
+
+.greetings p {
+  font-weight: 500;
 }
 
 .logo img {
@@ -35,13 +50,84 @@ body {
   width: 50%;
 }
 .login input:focus {
-  /* border: none; */
   border-color: #007bff;
 }
 
+.main-wrapper {
+  border: 1px solid;
+  height: 91.7%;
+  display: flex;
+  justify-content: center;
+}
+
+.main {
+  /* border: 1px solid green; */
+  width: 60%;
+  padding: 10px;
+}
+
+.dateTime {
+  /* border: 1px solid; */
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+.totalBalance {
+  text-align: end;
+  border: none;
+  font-size: 20px;
+}
+.date {
+  font-size: 14px;
+}
+.main-content {
+  display: flex;
+  justify-content: space-between;
+}
+.main-content .movementList {
+  /* border: 1px solid; */
+  width: 50%;
+  padding: 5px;
+  margin-top: 30px;
+  border-top-left-radius: 15px;
+  height: 500px;
+  overflow: scroll;
+}
+
+.movementList {
+  /* border: 1px solid; */
+  background-color: white;
+}
+
+.movement {
+  border-bottom: 1px solid rgb(175, 170, 170);
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 15px 20px 0px;
+}
+.movement div {
+  display: flex;
+  gap: 10px;
+}
+
+.deposit {
+  background-image: var(--green);
+  padding: 5px;
+  border-radius: 15px;
+  font-size: 12px;
+}
+.remove {
+  background-image: var(--red);
+  padding: 5px;
+  border-radius: 15px;
+  font-size: 12px;
+}
 @media (max-width: 786px) {
   .logo {
     display: none;
+  }
+  .main {
+    width: 109%;
   }
 }
 
@@ -54,5 +140,22 @@ body {
   .greetings {
     width: 100%;
     text-align: center;
+  }
+  .dateTime {
+    flex-direction: column;
+  }
+  .totalBalance {
+    text-align: start;
+    overflow: hidden;
+  }
+  .main-content {
+    flex-direction: column;
+  }
+  .main-content .movementList {
+    width: 100%;
+    font-size: 14px;
+  }
+  .movement div {
+    gap: 2px;
   }
 }
