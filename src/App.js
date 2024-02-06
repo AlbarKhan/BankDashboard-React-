@@ -48,7 +48,27 @@ function Main() {
         <CurrentBalance />
         <div className="main-content">
           <MovementList />
-          <div>Inputs</div>
+          <div className="Userinputs">
+            <Userinputs
+              inputLabel1={"Transfer to"}
+              inputLabel2={"Amount"}
+              Color={"yellow"}
+              twoInput={true}
+            >
+              Transfer Money
+            </Userinputs>
+            <Userinputs inputLabel1={"Amount"} Color={"green"} twoInput={false}>
+              Request Loan
+            </Userinputs>
+            <Userinputs
+              inputLabel1={"Confirm user"}
+              inputLabel2={"Confirm pin"}
+              Color={"red"}
+              twoInput={true}
+            >
+              Close Account
+            </Userinputs>
+          </div>
         </div>
       </div>
     </div>
@@ -76,27 +96,44 @@ function CurrentBalance() {
 }
 
 function MovementList() {
-  // console.log(accounts[0].movements.map());
   accounts[0].movements.map((mv) => console.log(mv));
   return (
     <div className="movementList">
       {accounts[0].movements.map((mv, i) => (
-        <Movement amount={mv} key={i} />
+        <Movement amount={mv} key={i} index={i} />
       ))}
-      {/* <Movement /> */}
     </div>
   );
 }
 
-function Movement({ amount }) {
+function Movement({ amount, index }) {
   console.log(amount);
   return (
     <div className="movement">
       <div>
-        <span className={amount > 0 ? "deposit" : "remove"}>8 Deposit</span>
+        <span className={amount > 0 ? "deposit" : "remove"}>
+          {index + 1} Deposit
+        </span>
         <span>05-02-24</span>
       </div>
       <div className="movementBalance">{amount}</div>
+    </div>
+  );
+}
+
+function Userinputs({ children, inputLabel1, inputLabel2, Color, twoInput }) {
+  return (
+    <div className={"actions " + Color}>
+      <p>{children}</p>
+      <div className="inputs">
+        <input></input>
+        {twoInput ? <input></input> : ""}
+        <i className="fa-solid fa-arrow-right"></i>
+      </div>
+      <div className="transerLabel">
+        <span>{inputLabel1}</span>
+        <span>{inputLabel2}</span>
+      </div>
     </div>
   );
 }
