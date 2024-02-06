@@ -22,7 +22,10 @@ const accounts = [
 ];
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
-
+  let transactions = [1, -1];
+  if (currentUser) {
+    transactions = currentUser.movements;
+  }
   let accountsCopy = accounts;
   function handleLogin(userId, password) {
     accountsCopy.forEach((acc) =>
@@ -31,97 +34,122 @@ export default function App() {
   }
   return (
     <div className="App">
-      <Header currentUser={currentUser} handleLogin={handleLogin} />
-      <Main opaccity={currentUser ? "login" : "logout"} />
+      <Header currentUser={currentUser} handleLogin={handleLogin}>
+        <Greetings currentUser={currentUser} />
+        <Logo />
+        <LoginInput handleLogin={handleLogin} />
+      </Header>
+      <Main opaccity={currentUser ? "login" : "logout"}>
+        <CurrentBalance Transactions={transactions} />
+        <Status Transactions={transactions} />
+        <MainContent>
+          <MovementList Transactions={transactions} />
+          <UserInputs />
+        </MainContent>
+      </Main>
     </div>
   );
 }
 
-function Header({ handleLogin, currentUser }) {
-  const [userId, setUserId] = useState(null);
-  const [password, setPassword] = useState(null);
+function Header({ handleLogin, children }) {
   return (
     <header>
-      <nav className="navbar">
-        <div className="greetings">
-          <p>{currentUser ? " Good Day " + currentUser.userName : "Login"}</p>
-        </div>
-        <div className="logo">
-          <img src="https://bankist.netlify.app/logo.png" alt="logo"></img>
-        </div>
-        <div className="login">
-          <input
-            className="user"
-            placeholder="user"
-            onChange={(e) => setUserId(e.target.value)}
-          ></input>
-          <input
-            className="id"
-            placeholder="id"
-            onChange={(e) => setPassword(e.target.value)}
-          ></input>
-          <i
-            className="fa-solid fa-arrow-right"
-            onClick={() => handleLogin(userId, password)}
-          ></i>
-        </div>
-      </nav>
+      <nav className="navbar">{children}</nav>
     </header>
   );
 }
 
-function Main({ opaccity }) {
-  console.log(opaccity);
+function Greetings({ currentUser }) {
+  return (
+    <div className="greetings">
+      <p>{currentUser ? " Good Day " + currentUser.userName : "Login"}</p>
+    </div>
+  );
+}
+function Logo() {
+  return (
+    <div className="logo">
+      <img src="https://bankist.netlify.app/logo.png" alt="logo"></img>
+    </div>
+  );
+}
+
+function LoginInput({ handleLogin }) {
+  const [userId, setUserId] = useState(null);
+  const [password, setPassword] = useState(null);
+  return (
+    <div className="login">
+      <input
+        className="user"
+        placeholder="user"
+        onChange={(e) => setUserId(e.target.value)}
+      ></input>
+      <input
+        className="id"
+        placeholder="id"
+        onChange={(e) => setPassword(e.target.value)}
+      ></input>
+      <i
+        className="fa-solid fa-arrow-right"
+        onClick={() => handleLogin(userId, password)}
+      ></i>
+    </div>
+  );
+}
+function Main({ opaccity, children }) {
   return (
     <div className="main-wrapper" id={opaccity}>
-      <div className="main">
-        <CurrentBalance />
-        <Status />
-        <div className="main-content">
-          <MovementList />
-          <div className="Userinputs">
-            <Userinputs
-              inputLabel1={"Transfer to"}
-              inputLabel2={"Amount"}
-              Color={"yellow"}
-              twoInput={true}
-            >
-              Transfer Money
-            </Userinputs>
-            <Userinputs inputLabel1={"Amount"} Color={"green"} twoInput={false}>
-              Request Loan
-            </Userinputs>
-            <Userinputs
-              inputLabel1={"Confirm user"}
-              inputLabel2={"Confirm pin"}
-              Color={"red"}
-              twoInput={true}
-            >
-              Close Account
-            </Userinputs>
-          </div>
-        </div>
-        {/* <Status /> */}
+      <div className="main">{children}</div>
+    </div>
+  );
+}
+
+function CurrentBalance({ Transactions }) {
+  const totalBalance = Transactions.reduce((accu, ele) => accu + ele);
+  const date = new Date();
+  const day = date.getDate();
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  return (
+    <div className="dateTime">
+      <div>
+        <p>CurrentBalance</p>
+        <p className="date">
+          {day}-{month + 1}-{year}
+        </p>
+      </div>
+      <div>
+        <input
+          className="totalBalance"
+          value={"$" + totalBalance}
+          disabled
+        ></input>
       </div>
     </div>
   );
 }
 
-function Status() {
+function Status({ Transactions }) {
+  const transactionIn = Transactions.filter((trans) => trans > 0).reduce(
+    (accu, ele) => accu + ele
+  );
+  const transactionOut = Transactions.filter((trans) => trans < 0).reduce(
+    (accu, ele) => accu + ele
+  );
   return (
     <div className="status-bar">
       <div className="status">
         <span className="in">
-          <span className="status-text">in</span>198989
+          <span className="status-text">in</span>${transactionIn}
         </span>
         <span className="out">
-          <span className="status-text ">out</span>198989
+          <span className="status-text ">out</span>-${-transactionOut}
         </span>
         <span className="in">
           <span className="status-text">interest</span>198989
         </span>
         <span>
-          <buttton className="sort">Sort</buttton>
+          <p className="sort">Sort</p>
         </span>
       </div>
       <div className="timer">
@@ -133,33 +161,41 @@ function Status() {
   );
 }
 
-function CurrentBalance() {
+function MainContent({ children }) {
+  return <div className="main-content">{children}</div>;
+}
+
+function UserInputs() {
   return (
-    <div className="dateTime">
-      <div>
-        <p>CurrentBalance</p>
-        <p className="date">05-02-2024</p>
-      </div>
-      <div>
-        {/* <label>$</label> */}
-        <input
-          className="totalBalance"
-          value={"$" + 9999999999999}
-          disabled
-        ></input>
-        {/* <p className="totalBalance">$999999999999999999999999999999999</p> */}
-      </div>
+    <div className="Userinputs">
+      <Userinput
+        inputLabel1={"Transfer to"}
+        inputLabel2={"Amount"}
+        Color={"yellow"}
+        twoInput={true}
+      >
+        Transfer Money
+      </Userinput>
+      <Userinput inputLabel1={"Amount"} Color={"green"} twoInput={false}>
+        Request Loan
+      </Userinput>
+      <Userinput
+        inputLabel1={"Confirm user"}
+        inputLabel2={"Confirm pin"}
+        Color={"red"}
+        twoInput={true}
+      >
+        Close Account
+      </Userinput>
     </div>
   );
 }
-
-function MovementList() {
-  // accounts[0].movements.map((mv) => console.log(mv));
+function MovementList({ Transactions }) {
   return (
     <div className="movementList">
-      {accounts[0].movements
-        .map((mv, i) => <Movement amount={mv} key={i} index={i} />)
-        .reverse()}
+      {Transactions.map((mv, i) => (
+        <Movement amount={mv} key={i} index={i} />
+      )).reverse()}
     </div>
   );
 }
@@ -179,7 +215,7 @@ function Movement({ amount, index }) {
   );
 }
 
-function Userinputs({ children, inputLabel1, inputLabel2, Color, twoInput }) {
+function Userinput({ children, inputLabel1, inputLabel2, Color, twoInput }) {
   return (
     <div className={"actions " + Color}>
       <p>{children}</p>

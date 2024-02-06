@@ -215,6 +215,8 @@ body {
 
 .sort {
   cursor: pointer;
+  /* border: 1px solid; */
+  /* background-color: ; */
 }
 @media (max-width: 786px) {
   .logo {
