@@ -1,49 +1,79 @@
+import { useState } from "react";
+
 const accounts = [
   {
-    userName: "Albar",
-    pin: "222",
+    userName: "a",
+    pin: "111",
     movements: [200, 100, -23, 21, 2, -34, 56, 23],
     id: 0,
   },
   {
-    userName: "Khan",
+    userName: "khan",
     pin: "111",
     movements: [200, -100, 23, 21, 2, 34, -56, 23],
     id: 1,
   },
+  {
+    userName: "sufiyan",
+    pin: "333",
+    movements: [400, -100, 23, 21, 2, 34, -56, 23],
+    id: 1,
+  },
 ];
 export default function App() {
+  const [currentUser, setCurrentUser] = useState(null);
+
+  let accountsCopy = accounts;
+  function handleLogin(userId, password) {
+    accountsCopy.forEach((acc) =>
+      acc.userName === userId && acc.pin === password ? setCurrentUser(acc) : ""
+    );
+  }
   return (
     <div className="App">
-      <Header />
-      <Main />
+      <Header currentUser={currentUser} handleLogin={handleLogin} />
+      <Main opaccity={currentUser ? "login" : "logout"} />
     </div>
   );
 }
 
-function Header() {
+function Header({ handleLogin, currentUser }) {
+  const [userId, setUserId] = useState(null);
+  const [password, setPassword] = useState(null);
   return (
     <header>
       <nav className="navbar">
         <div className="greetings">
-          <p>Goody Day Albar Khan</p>
+          <p>{currentUser ? " Good Day " + currentUser.userName : "Login"}</p>
         </div>
         <div className="logo">
           <img src="https://bankist.netlify.app/logo.png" alt="logo"></img>
         </div>
         <div className="login">
-          <input className="user" placeholder="user"></input>
-          <input className="id" placeholder="id"></input>
-          <i className="fa-solid fa-arrow-right"></i>
+          <input
+            className="user"
+            placeholder="user"
+            onChange={(e) => setUserId(e.target.value)}
+          ></input>
+          <input
+            className="id"
+            placeholder="id"
+            onChange={(e) => setPassword(e.target.value)}
+          ></input>
+          <i
+            className="fa-solid fa-arrow-right"
+            onClick={() => handleLogin(userId, password)}
+          ></i>
         </div>
       </nav>
     </header>
   );
 }
 
-function Main() {
+function Main({ opaccity }) {
+  console.log(opaccity);
   return (
-    <div className="main-wrapper">
+    <div className="main-wrapper" id={opaccity}>
       <div className="main">
         <CurrentBalance />
         <Status />
@@ -91,7 +121,7 @@ function Status() {
           <span className="status-text">interest</span>198989
         </span>
         <span>
-          <buttton>Sort</buttton>
+          <buttton className="sort">Sort</buttton>
         </span>
       </div>
       <div className="timer">
@@ -124,7 +154,7 @@ function CurrentBalance() {
 }
 
 function MovementList() {
-  accounts[0].movements.map((mv) => console.log(mv));
+  // accounts[0].movements.map((mv) => console.log(mv));
   return (
     <div className="movementList">
       {accounts[0].movements
@@ -135,7 +165,7 @@ function MovementList() {
 }
 
 function Movement({ amount, index }) {
-  console.log(amount);
+  // console.log(amount);
   return (
     <div className="movement">
       <div>

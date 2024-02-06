@@ -49,11 +49,18 @@ body {
   border-color: #007bff;
 }
 
+#login {
+  opacity: 1;
+}
+#logout {
+  opacity: 0;
+}
 .main-wrapper {
   height: 91.7%;
   margin-top: 50px;
   display: flex;
   justify-content: center;
+  transition: all 3s;
 }
 
 .main {
@@ -204,6 +211,10 @@ body {
 .out {
   color: rgb(245, 70, 93);
   font-size: 20px;
+}
+
+.sort {
+  cursor: pointer;
 }
 @media (max-width: 786px) {
   .logo {
