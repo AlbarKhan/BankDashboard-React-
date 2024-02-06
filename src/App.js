@@ -46,6 +46,7 @@ function Main() {
     <div className="main-wrapper">
       <div className="main">
         <CurrentBalance />
+        <Status />
         <div className="main-content">
           <MovementList />
           <div className="Userinputs">
@@ -70,6 +71,33 @@ function Main() {
             </Userinputs>
           </div>
         </div>
+        {/* <Status /> */}
+      </div>
+    </div>
+  );
+}
+
+function Status() {
+  return (
+    <div className="status-bar">
+      <div className="status">
+        <span className="in">
+          <span className="status-text">in</span>198989
+        </span>
+        <span className="out">
+          <span className="status-text ">out</span>198989
+        </span>
+        <span className="in">
+          <span className="status-text">interest</span>198989
+        </span>
+        <span>
+          <buttton>Sort</buttton>
+        </span>
+      </div>
+      <div className="timer">
+        <p>
+          <span>you will be logged out in </span>9:00
+        </p>
       </div>
     </div>
   );
@@ -99,9 +127,9 @@ function MovementList() {
   accounts[0].movements.map((mv) => console.log(mv));
   return (
     <div className="movementList">
-      {accounts[0].movements.map((mv, i) => (
-        <Movement amount={mv} key={i} index={i} />
-      ))}
+      {accounts[0].movements
+        .map((mv, i) => <Movement amount={mv} key={i} index={i} />)
+        .reverse()}
     </div>
   );
 }
@@ -126,8 +154,8 @@ function Userinputs({ children, inputLabel1, inputLabel2, Color, twoInput }) {
     <div className={"actions " + Color}>
       <p>{children}</p>
       <div className="inputs">
-        <input></input>
         {twoInput ? <input></input> : ""}
+        <input type="Number"></input>
         <i className="fa-solid fa-arrow-right"></i>
       </div>
       <div className="transerLabel">

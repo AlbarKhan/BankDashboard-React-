@@ -13,9 +13,6 @@
 body {
   background-color: whitesmoke;
 }
-.App {
-  /* height: 100vh; */
-}
 
 .navbar {
   display: flex;
@@ -43,18 +40,18 @@ body {
 }
 .login input {
   border: 1px solid #ced4da;
+  width: 50%;
   padding: 8px;
   border-radius: 30px;
   text-align: center;
-  width: 50%;
 }
 .login input:focus {
   border-color: #007bff;
 }
 
 .main-wrapper {
-  border: 1px solid;
   height: 91.7%;
+  margin-top: 50px;
   display: flex;
   justify-content: center;
 }
@@ -71,8 +68,8 @@ body {
 }
 .totalBalance {
   text-align: end;
-  border: none;
   font-size: 20px;
+  border: none;
 }
 .date {
   font-size: 14px;
@@ -83,15 +80,17 @@ body {
 }
 .main-content .movementList {
   width: 50%;
-  padding: 5px;
+  padding: 15px;
   margin-top: 30px;
   border-top-left-radius: 10px;
   height: 500px;
   overflow: scroll;
+  box-shadow: 4px 0 8px 0 rgba(0, 0, 0, 0.5);
 }
 
 .movementList {
   background-color: white;
+  margin-right: 20px;
 }
 
 .movement {
@@ -104,27 +103,38 @@ body {
   display: flex;
   gap: 10px;
 }
+.movement span {
+  font-size: 14px;
+}
+
+.movementBalance {
+  font-size: 1rem;
+  font-weight: 200;
+  /* border: 1px solid; */
+}
 
 .deposit {
   background-image: var(--green);
   padding: 5px;
   border-radius: 15px;
-  font-size: 12px;
+  font-size: 12px !important;
 }
 .remove {
   background-image: var(--red);
   padding: 5px;
   border-radius: 15px;
-  font-size: 12px;
+  font-size: 12px !important;
 }
 
 .Userinputs {
   width: 50%;
   padding: 10px;
+  /* border: 1px solid; */
+  padding-top: 25px;
 }
 .actions {
   width: 100%;
-  padding: 3rem 4rem;
+  padding: 2rem 2rem;
   border-radius: 20px;
   margin-bottom: 20px;
 }
@@ -155,11 +165,45 @@ body {
   padding: 5px;
   background-color: rgba(255, 255, 255, 0.4);
 }
+.inputs i {
+  padding: 5px 20px;
+  background-color: white;
+  border-radius: 5px;
+}
 .transerLabel {
   display: flex;
   justify-content: space-around;
+  width: 80%;
   margin-top: 5px;
-  margin-right: 20px;
+}
+
+.transerLabel span {
+  font-size: 14px;
+}
+
+.status-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.status {
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+.status-text {
+  font-size: 12px;
+  margin-right: 6px;
+}
+
+.in {
+  color: rgb(102, 200, 115);
+  font-size: 20px;
+}
+.out {
+  color: rgb(245, 70, 93);
+  font-size: 20px;
 }
 @media (max-width: 786px) {
   .logo {
@@ -193,6 +237,8 @@ body {
   .main-content .movementList {
     width: 100%;
     font-size: 14px;
+    padding: 5px;
+    margin-right: 0px;
   }
   .Userinputs {
     width: 100%;
@@ -203,5 +249,21 @@ body {
 
   .actions {
     padding: 2rem 1rem;
+  }
+
+  .status-bar {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .status {
+    width: 100%;
+  }
+
+  .in {
+    font-size: 14px;
+  }
+  .out {
+    font-size: 14px;
   }
 }
