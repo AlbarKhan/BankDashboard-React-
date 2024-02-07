@@ -10,7 +10,7 @@ const accounts = [
   {
     userName: "khan",
     pin: "111",
-    movements: [200, -100, 23, 21, 2, 34, -56, 23],
+    movements: [2000, -100, 23, 21, 2, 34, -56, 23],
     id: 1,
   },
   {
@@ -23,15 +23,38 @@ const accounts = [
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   let transactions = [1, -1];
+
   if (currentUser) {
     transactions = currentUser.movements;
   }
-  let accountsCopy = accounts;
+  // let accountsCopy = accounts;
   function handleLogin(userId, password) {
-    accountsCopy.forEach((acc) =>
-      acc.userName === userId && acc.pin === password ? setCurrentUser(acc) : ""
+    // const user = accounts.map((acc) =>
+    //   acc.userName === userId && acc.pin === password ? setCurrentUser(acc) : ""
+    // );
+    const user = accounts.find(
+      (acc) => acc.userName === userId && acc.pin === password
     );
+
+    if (user) {
+      setCurrentUser(user);
+    }
   }
+
+  function handleTransferMoney(username, amount) {
+    accounts.forEach((acc) => {
+      if (username === acc.userName) {
+        acc.movements.push(amount);
+        setCurrentUser({
+          ...currentUser,
+          movements: [...currentUser.movements, -amount],
+        });
+      } else {
+        return;
+      }
+    });
+  }
+  const totalBalance = transactions.reduce((accu, ele) => accu + ele);
   return (
     <div className="App">
       <Header currentUser={currentUser} handleLogin={handleLogin}>
@@ -40,11 +63,30 @@ export default function App() {
         <LoginInput handleLogin={handleLogin} />
       </Header>
       <Main opaccity={currentUser ? "login" : "logout"}>
-        <CurrentBalance Transactions={transactions} />
-        <Status Transactions={transactions} />
+        <CurrentBalance totalBalance={totalBalance} />
+        <Status Transactions={transactions} totalBalance={totalBalance} />
         <MainContent>
           <MovementList Transactions={transactions} />
-          <UserInputs />
+          <UserInputs>
+            <Userinput
+              inputLabel1={"Transfer to"}
+              inputLabel2={"Amount"}
+              Color={"yellow"}
+              onAction={handleTransferMoney}
+            >
+              Transfer Money
+            </Userinput>
+            <Userinput inputLabel1={"Amount"} Color={"green"}>
+              Request Loan
+            </Userinput>
+            <Userinput
+              inputLabel1={"Confirm user"}
+              inputLabel2={"Confirm pin"}
+              Color={"red"}
+            >
+              Close Account
+            </Userinput>
+          </UserInputs>
         </MainContent>
       </Main>
     </div>
@@ -104,8 +146,7 @@ function Main({ opaccity, children }) {
   );
 }
 
-function CurrentBalance({ Transactions }) {
-  const totalBalance = Transactions.reduce((accu, ele) => accu + ele);
+function CurrentBalance({ totalBalance }) {
   const date = new Date();
   const day = date.getDate();
   const month = date.getMonth();
@@ -129,13 +170,16 @@ function CurrentBalance({ Transactions }) {
   );
 }
 
-function Status({ Transactions }) {
+function Status({ Transactions, totalBalance }) {
   const transactionIn = Transactions.filter((trans) => trans > 0).reduce(
     (accu, ele) => accu + ele
   );
   const transactionOut = Transactions.filter((trans) => trans < 0).reduce(
     (accu, ele) => accu + ele
   );
+
+  const Interest = Math.trunc((7 / 100) * totalBalance);
+
   return (
     <div className="status-bar">
       <div className="status">
@@ -146,7 +190,8 @@ function Status({ Transactions }) {
           <span className="status-text ">out</span>-${-transactionOut}
         </span>
         <span className="in">
-          <span className="status-text">interest</span>198989
+          <span className="status-text">interest</span>
+          {Interest}
         </span>
         <span>
           <p className="sort">Sort</p>
@@ -165,30 +210,8 @@ function MainContent({ children }) {
   return <div className="main-content">{children}</div>;
 }
 
-function UserInputs() {
-  return (
-    <div className="Userinputs">
-      <Userinput
-        inputLabel1={"Transfer to"}
-        inputLabel2={"Amount"}
-        Color={"yellow"}
-        twoInput={true}
-      >
-        Transfer Money
-      </Userinput>
-      <Userinput inputLabel1={"Amount"} Color={"green"} twoInput={false}>
-        Request Loan
-      </Userinput>
-      <Userinput
-        inputLabel1={"Confirm user"}
-        inputLabel2={"Confirm pin"}
-        Color={"red"}
-        twoInput={true}
-      >
-        Close Account
-      </Userinput>
-    </div>
-  );
+function UserInputs({ children }) {
+  return <div className="Userinputs">{children}</div>;
 }
 function MovementList({ Transactions }) {
   return (
@@ -206,7 +229,7 @@ function Movement({ amount, index }) {
     <div className="movement">
       <div>
         <span className={amount > 0 ? "deposit" : "remove"}>
-          {index + 1} Deposit
+          {index + 1} {amount > 0 ? "Deposit" : "Withdraw"}
         </span>
         <span>05-02-24</span>
       </div>
@@ -215,14 +238,30 @@ function Movement({ amount, index }) {
   );
 }
 
-function Userinput({ children, inputLabel1, inputLabel2, Color, twoInput }) {
+function Userinput({ children, inputLabel1, inputLabel2, Color, onAction }) {
+  const [username, setUserName] = useState("");
+  const [amount, setAmount] = useState(0);
   return (
     <div className={"actions " + Color}>
       <p>{children}</p>
       <div className="inputs">
-        {twoInput ? <input></input> : ""}
-        <input type="Number"></input>
-        <i className="fa-solid fa-arrow-right"></i>
+        {inputLabel2 ? (
+          <input
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+          ></input>
+        ) : (
+          ""
+        )}
+        <input
+          type="Number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        ></input>
+        <i
+          className="fa-solid fa-arrow-right"
+          onClick={() => onAction(username, amount)}
+        ></i>
       </div>
       <div className="transerLabel">
         <span>{inputLabel1}</span>
