@@ -3,31 +3,25 @@ import { useState } from "react";
 const accounts = [
   {
     userName: "a",
-    pin: "111",
+    pin: 111,
     movements: [200, 100, -23, 21, 2, -34, 56, 23],
     id: 0,
   },
   {
     userName: "khan",
-    pin: "111",
+    pin: 111,
     movements: [2000, -100, 23, 21, 2, 34, -56, 23],
     id: 1,
   },
   {
     userName: "sufiyan",
-    pin: "333",
+    pin: 333,
     movements: [400, -100, 23, 21, 2, 34, -56, 23],
     id: 1,
   },
 ];
 export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
-  let transactions = [1, -1];
-
-  if (currentUser) {
-    transactions = currentUser.movements;
-  }
-  // let accountsCopy = accounts;
   function handleLogin(userId, password) {
     // const user = accounts.map((acc) =>
     //   acc.userName === userId && acc.pin === password ? setCurrentUser(acc) : ""
@@ -39,6 +33,11 @@ export default function App() {
     if (user) {
       setCurrentUser(user);
     }
+  }
+  let transactions = [0, 0];
+
+  if (currentUser) {
+    transactions = currentUser.movements;
   }
 
   function handleTransferMoney(username, amount) {
@@ -53,7 +52,9 @@ export default function App() {
         return;
       }
     });
+    console.log(transactions);
   }
+
   const totalBalance = transactions.reduce((accu, ele) => accu + ele);
   return (
     <div className="App">
@@ -67,33 +68,18 @@ export default function App() {
         <Status Transactions={transactions} totalBalance={totalBalance} />
         <MainContent>
           <MovementList Transactions={transactions} />
-          <UserInputs>
-            <Userinput
-              inputLabel1={"Transfer to"}
-              inputLabel2={"Amount"}
-              Color={"yellow"}
-              onAction={handleTransferMoney}
-            >
-              Transfer Money
-            </Userinput>
-            <Userinput inputLabel1={"Amount"} Color={"green"}>
-              Request Loan
-            </Userinput>
-            <Userinput
-              inputLabel1={"Confirm user"}
-              inputLabel2={"Confirm pin"}
-              Color={"red"}
-            >
-              Close Account
-            </Userinput>
-          </UserInputs>
+          <UserInputs
+            currentUser={currentUser}
+            setCurrentUser={setCurrentUser}
+            onTransfer={handleTransferMoney}
+          />
         </MainContent>
       </Main>
     </div>
   );
 }
 
-function Header({ handleLogin, children }) {
+function Header({ children }) {
   return (
     <header>
       <nav className="navbar">{children}</nav>
@@ -129,7 +115,7 @@ function LoginInput({ handleLogin }) {
       <input
         className="id"
         placeholder="id"
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => setPassword(Number(e.target.value))}
       ></input>
       <i
         className="fa-solid fa-arrow-right"
@@ -171,10 +157,10 @@ function CurrentBalance({ totalBalance }) {
 }
 
 function Status({ Transactions, totalBalance }) {
-  const transactionIn = Transactions.filter((trans) => trans > 0).reduce(
+  const transactionIn = Transactions.filter((trans) => trans >= 0).reduce(
     (accu, ele) => accu + ele
   );
-  const transactionOut = Transactions.filter((trans) => trans < 0).reduce(
+  const transactionOut = Transactions.filter((trans) => trans <= 0).reduce(
     (accu, ele) => accu + ele
   );
 
@@ -210,8 +196,97 @@ function MainContent({ children }) {
   return <div className="main-content">{children}</div>;
 }
 
-function UserInputs({ children }) {
-  return <div className="Userinputs">{children}</div>;
+function UserInputs({ children, currentUser, setCurrentUser, onTransfer }) {
+  function handleLoan(userName, amount) {
+    accounts.forEach((acc) => {
+      if (acc.userName === currentUser.userName) {
+        acc.movements.push(amount);
+        setCurrentUser({
+          ...currentUser,
+          movements: acc.movements,
+        });
+      }
+    });
+  }
+
+  function handleAccountsClosing(userName, pin) {
+    let index;
+    accounts.forEach((acc, i) => {
+      if (
+        acc.userName === currentUser.userName &&
+        acc.pin === currentUser.pin &&
+        acc.userName === userName &&
+        acc.pin === pin
+      ) {
+        index = i;
+        // transactions = [0, 0];
+        accounts.splice(index, 1);
+        setCurrentUser(null);
+      }
+    });
+  }
+  return (
+    <div className="Userinputs">
+      {" "}
+      <Userinput
+        inputLabel1={"Transfer to"}
+        inputLabel2={"Amount"}
+        Color={"yellow"}
+        onClick={onTransfer}
+      >
+        Transfer Money
+      </Userinput>
+      <Userinput inputLabel1={"Amount"} Color={"green"} onClick={handleLoan}>
+        Request Loan
+      </Userinput>
+      <Userinput
+        inputLabel1={"Confirm user"}
+        inputLabel2={"Confirm pin"}
+        Color={"red"}
+        onClick={handleAccountsClosing}
+      >
+        Close Account
+      </Userinput>{" "}
+    </div>
+  );
+}
+function Userinput({ children, inputLabel1, inputLabel2, Color, onClick }) {
+  const [username, setUserName] = useState("");
+  const [amount, setAmount] = useState(null);
+
+  function handleOnclick() {
+    onClick(username, amount);
+    setUserName("");
+    setAmount(0);
+  }
+  return (
+    <div className={"actions " + Color}>
+      <p>{children}</p>
+      <div className="inputs">
+        {inputLabel2 ? (
+          <input
+            value={username}
+            onChange={(e) => setUserName(e.target.value)}
+          ></input>
+        ) : (
+          ""
+        )}
+        <input
+          type="Number"
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+        ></input>
+        <i
+          className="fa-solid fa-arrow-right"
+          onClick={() => handleOnclick()}
+        ></i>
+      </div>
+      <div className="transerLabel">
+        <span>{inputLabel1}</span>
+        <span>{inputLabel2}</span>
+      </div>
+    </div>
+  );
 }
 function MovementList({ Transactions }) {
   return (
@@ -234,39 +309,6 @@ function Movement({ amount, index }) {
         <span>05-02-24</span>
       </div>
       <div className="movementBalance">{amount}</div>
-    </div>
-  );
-}
-
-function Userinput({ children, inputLabel1, inputLabel2, Color, onAction }) {
-  const [username, setUserName] = useState("");
-  const [amount, setAmount] = useState(0);
-  return (
-    <div className={"actions " + Color}>
-      <p>{children}</p>
-      <div className="inputs">
-        {inputLabel2 ? (
-          <input
-            value={username}
-            onChange={(e) => setUserName(e.target.value)}
-          ></input>
-        ) : (
-          ""
-        )}
-        <input
-          type="Number"
-          value={amount}
-          onChange={(e) => setAmount(Number(e.target.value))}
-        ></input>
-        <i
-          className="fa-solid fa-arrow-right"
-          onClick={() => onAction(username, amount)}
-        ></i>
-      </div>
-      <div className="transerLabel">
-        <span>{inputLabel1}</span>
-        <span>{inputLabel2}</span>
-      </div>
     </div>
   );
 }
