@@ -55,6 +55,13 @@ export default function App() {
     console.log(transactions);
   }
 
+  function handleSort() {
+    setCurrentUser({
+      ...currentUser,
+      movements: [...currentUser.movements].sort((a, b) => a - b),
+    });
+  }
+
   const totalBalance = transactions.reduce((accu, ele) => accu + ele);
   return (
     <div className="App">
@@ -65,7 +72,11 @@ export default function App() {
       </Header>
       <Main opaccity={currentUser ? "login" : "logout"}>
         <CurrentBalance totalBalance={totalBalance} />
-        <Status Transactions={transactions} totalBalance={totalBalance} />
+        <Status
+          Transactions={transactions}
+          totalBalance={totalBalance}
+          onSort={handleSort}
+        />
         <MainContent>
           <MovementList Transactions={transactions} />
           <UserInputs
@@ -156,7 +167,7 @@ function CurrentBalance({ totalBalance }) {
   );
 }
 
-function Status({ Transactions, totalBalance }) {
+function Status({ Transactions, totalBalance, onSort }) {
   const transactionIn = Transactions.filter((trans) => trans >= 0).reduce(
     (accu, ele) => accu + ele
   );
@@ -180,7 +191,13 @@ function Status({ Transactions, totalBalance }) {
           {Interest}
         </span>
         <span>
-          <p className="sort">Sort</p>
+          <p
+            className="sort"
+            style={{ cursor: "pointer" }}
+            onClick={() => onSort()}
+          >
+            Sort
+          </p>
         </span>
       </div>
       <div className="timer">
@@ -252,7 +269,7 @@ function UserInputs({ children, currentUser, setCurrentUser, onTransfer }) {
 }
 function Userinput({ children, inputLabel1, inputLabel2, Color, onClick }) {
   const [username, setUserName] = useState("");
-  const [amount, setAmount] = useState(null);
+  const [amount, setAmount] = useState("");
 
   function handleOnclick() {
     onClick(username, amount);
